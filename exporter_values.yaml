@@ -1,0 +1,11 @@
+#these are the only components that we need to Override from the default Helm installation
+mongodb:
+ # the "uri" parameter tells the mongodb exporter HOW to connect to MongoDB (Service endpoint)
+  uri: "mongodb://Username:Password@mongo-service:27017" 
+
+serviceMonitor:
+  enabled: true
+  additionalLabels: 
+    release: promstack
+
+

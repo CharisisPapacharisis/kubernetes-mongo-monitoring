@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-argo-application
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:CharisisPapacharisis/kubernetes-mongo-monitoring.git
+    targetRevision: HEAD #that is basically always the last commit in our git repository
+    path: kubernetes #this is the path in our repository, that the ArgoCD will be tracking. In our case, /kubernetes.
+  destination:
+    # We need to set as destination the address/endpoint of the K8s cluster itself
+    # we use the below value since ArgoCD runs itself also in the same K8s cluster. 
+    #This is ArgoCD internal service name of the K8s API Server.
+    server: https://kubernetes.default.svc  
+    namespace: default #This is where the ArgoCD application will be deployed
+  
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true #This created the namespace specified above, if it doesn't exist in the cluster
+    automated:  #Enable Automatic sync of Git repo with the cluster
+      selfHeal: true  #Ensure that manual changes to the cluster will not take effect (will be corrected by ArgoCD, based on Repo status)
+      prune: true   #If in our config we rename/delete an object, this will be then reflected in the cluster
